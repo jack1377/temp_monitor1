@@ -1,0 +1,41 @@
+name: Flutter Web Build & Deploy
+
+on:
+  push:
+    branches:
+      - main  # شاخه اصلی پروژه شما
+
+jobs:
+  build-and-deploy:
+    runs-on: ubuntu-latest
+
+    steps:
+      # 1️⃣ گرفتن سورس کد
+      - name: Checkout repository
+        uses: actions/checkout@v3
+
+      # 2️⃣ نصب Flutter
+      - name: Setup Flutter
+        uses: subosito/flutter-action@v2
+        with:
+          flutter-version: "3.35.6" # یا نسخه Flutter شما
+
+      # 3️⃣ فعال کردن Web
+      - name: Enable web
+        run: flutter config --enable-web
+
+      # 4️⃣ نصب وابستگی‌ها
+      - name: Install dependencies
+        run: flutter pub get
+
+      # 5️⃣ ساخت نسخه Release Web
+      - name: Build web
+        run: flutter build web --release
+
+      # 6️⃣ انتشار روی GitHub Pages با پاک کردن شاخه قدیمی
+      - name: Deploy to GitHub Pages
+        uses: peaceiris/actions-gh-pages@v3
+        with:
+          github_token: ${{ secrets.GITHUB_TOKEN }}
+          publish_dir: build/web
+          force_orphan: true   # پاکسازی کامل شاخه قدیمی و جلوگیری از خطای فایل تکراری
